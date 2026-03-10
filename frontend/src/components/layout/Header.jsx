@@ -415,7 +415,7 @@ const s = {
     position: 'absolute',
     top: '56px',
     right: 0,
-    background: 'rgba(255, 255, 255, 0.85)',
+    background: 'rgba(255, 255, 255, 0.96)',
     backdropFilter: 'blur(24px)',
     border: '1px solid rgba(255, 255, 255, 0.4)',
     borderRadius: '20px',
