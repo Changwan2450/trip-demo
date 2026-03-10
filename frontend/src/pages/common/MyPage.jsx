@@ -450,7 +450,7 @@ const sInfo = {
   label: { fontSize: '13px', fontWeight: '700', color: '#777' },
   inputVal: { fontSize: '15px', color: '#222', padding: '16px', background: '#F8F9FA', borderRadius: '12px' },
   inputMuted: { fontSize: '15px', color: '#AAA', padding: '16px', background: '#F8F9FA', borderRadius: '12px' },
-  inputEdit: { fontSize: '15px', color: '#1A1A1A', padding: '15px', background: '#FFFFFF', borderRadius: '12px', border: `1px solid ${C.primary}`, outline: 'none', width: '100%', boxSizing: 'border-box' },
+  inputEdit: { height: '52px', fontSize: '15px', color: '#1A1A1A', padding: '0 15px', background: '#FFFFFF', borderRadius: '12px', border: `1px solid ${C.primary}`, outline: 'none', width: '100%', boxSizing: 'border-box' },
 
   deviceWrap: { paddingBottom: '32px', borderBottom: '1px solid #F0EFEF' },
   deviceHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' },
