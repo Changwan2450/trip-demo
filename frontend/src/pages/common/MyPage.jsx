@@ -9,8 +9,12 @@ import { C, MAX_WIDTH, R, S } from '../../styles/tokens';
 import { INQUIRY_TYPE_LABELS } from '../../constants/inquiryTypes';
 
 const USER_TABS = [
-  { key: 'bookings', label: '내 예약' },
-  { key: 'inquiries', label: '내 문의' },
+  { key: 'bookings', label: '예약 내역' },
+  { key: 'wishlist', label: '찜 목록' },
+  { key: 'points', label: '포인트' },
+  { key: 'coupons', label: '쿠폰' },
+  { key: 'myinfo', label: '내 정보 관리' },
+  { key: 'settings', label: '설정' },
 ];
 const SELLER_TABS = [
   { key: 'lodgings', label: '내 숙소', to: '/seller/lodgings' },
@@ -39,19 +43,75 @@ function BookingsList({ bookings }) {
   );
 }
 
-function InquiriesList({ inquiries }) {
-  if (!inquiries.length) return <p style={{ color: C.textSub, padding: '20px 0' }}>문의 내역이 없습니다.</p>;
+function MyInfoSection({ user, logout }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {inquiries.map(i => (
-        <div key={i.inquiryId} style={sCard.inquiryCard}>
-          <div style={sCard.inquiryTop}>
-            <span style={sCard.inquiryTitle}>{i.title}</span>
-            <Badge status={i.inquiryStatus} />
+    <div style={sInfo.wrap}>
+      <div style={sInfo.header}>
+        <div style={sInfo.avatarWrap}>
+          <div style={{ ...s.avatar, width: '64px', height: '64px', fontSize: '28px' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 2L11 13" />
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+            </svg>
           </div>
-          <p style={sCard.inquiryMeta}>{INQUIRY_TYPE_LABELS[i.inquiryType]} · {i.createdAt}</p>
         </div>
-      ))}
+        <div style={sInfo.headerText}>
+          <p style={sInfo.desc}>회원 정보</p>
+          <p style={sInfo.subDesc}>현재 정보 수정은 앱 또는 고객센터를 통해 가능해요.</p>
+        </div>
+      </div>
+
+      <div style={sInfo.secureAlert}>
+        <div style={sInfo.secureAlertText}>🔒 가려진 내 정보를 확인할 수 있어요!</div>
+        <div style={sInfo.secureToggle}>
+          <div style={sInfo.secureToggleKnob} />
+        </div>
+      </div>
+
+      <div style={sInfo.grid}>
+        <div style={sInfo.field}>
+          <label style={sInfo.label}>닉네임</label>
+          <div style={sInfo.inputVal}>{user.name}</div>
+        </div>
+        <div style={sInfo.field}>
+          <label style={sInfo.label}>예약자 이름</label>
+          <div style={sInfo.inputMuted}>미입력(앱에서 입력해 주세요.)</div>
+        </div>
+        <div style={sInfo.field}>
+          <label style={sInfo.label}>휴대폰 번호</label>
+          <div style={sInfo.inputMuted}>010****1234</div>
+        </div>
+        <div style={sInfo.field}>
+          <label style={sInfo.label}>생년월일</label>
+          <div style={sInfo.inputMuted}>미입력(앱에서 입력해 주세요.)</div>
+        </div>
+        <div style={sInfo.field}>
+          <label style={sInfo.label}>성별</label>
+          <div style={sInfo.inputMuted}>미입력(앱에서 입력해 주세요.)</div>
+        </div>
+      </div>
+
+      <div style={sInfo.deviceWrap}>
+        <div style={sInfo.deviceHeader}>
+          <h3 style={sInfo.deviceTitle}>접속 기기 관리</h3>
+          <button style={sInfo.textBtn} onClick={logout}>전체 로그아웃</button>
+        </div>
+        <p style={sInfo.deviceDesc}>로그인 된 모든 기기에서 로그아웃 돼요.</p>
+      </div>
+
+      <div style={sInfo.footer}>
+        <span style={{ color: '#999' }}>더 이상 TripZone 이용을 원하지 않으신가요? </span>
+        <button style={sInfo.textBtnGray}>회원탈퇴</button>
+      </div>
+    </div>
+  );
+}
+
+function EmptyView({ title }) {
+  return (
+    <div style={{ textAlign: 'center', padding: '60px 0', color: C.textSub }}>
+      <div style={{ fontSize: '40px', marginBottom: '16px' }}>📭</div>
+      <p style={{ margin: 0, fontSize: '16px' }}>아직 {title}가 없어요.</p>
     </div>
   );
 }
@@ -125,9 +185,14 @@ export default function MyPage() {
         <main style={s.content}>
           {user.role === ROLES.USER && (
             <>
-              <h2 style={s.contentTitle}>{tab === 'bookings' ? '내 예약' : '내 문의'}</h2>
+              <h2 style={s.contentTitle}>
+                {USER_TABS.find(t => t.key === tab)?.label}
+              </h2>
               {tab === 'bookings' && <BookingsList bookings={bookings} />}
-              {tab === 'inquiries' && <InquiriesList inquiries={inquiries} />}
+              {tab === 'myinfo' && <MyInfoSection user={user} logout={handleLogout} />}
+              {['wishlist', 'points', 'coupons', 'settings'].includes(tab) && (
+                <EmptyView title={USER_TABS.find(t => t.key === tab)?.label} />
+              )}
             </>
           )}
           {user.role === ROLES.SELLER && (
@@ -191,6 +256,7 @@ const s = {
     color: C.text,
     cursor: 'pointer',
     transition: 'background 0.2s',
+    outline: 'none',
   },
   logoutBtn: {
     width: '100%',
@@ -238,4 +304,49 @@ const sCard = {
   inquiryTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' },
   inquiryTitle: { fontSize: '16px', fontWeight: '700', color: C.text },
   inquiryMeta: { fontSize: '14px', color: '#888', margin: 0 },
+};
+
+const sInfo = {
+  wrap: { display: 'flex', flexDirection: 'column', gap: '32px' },
+  header: { display: 'flex', gap: '24px', alignItems: 'center' },
+  avatarWrap: {
+    width: '100px', height: '100px', borderRadius: '50%',
+    background: 'linear-gradient(135deg, rgba(232,72,74,0.05) 0%, rgba(232,72,74,0.15) 100%)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+  },
+  desc: { fontSize: '20px', fontWeight: '800', color: C.text, margin: '0 0 8px' },
+  subDesc: { fontSize: '14px', color: C.textSub, margin: 0 },
+
+  secureAlert: {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    background: '#F8F9FA', borderRadius: '16px', padding: '16px 24px',
+    border: '1px solid #F0EFEF'
+  },
+  secureAlertText: { fontSize: '15px', fontWeight: '600', color: '#4A4A4A' },
+  secureToggle: {
+    width: '48px', height: '24px', borderRadius: '12px', background: '#DCDCDC',
+    position: 'relative', cursor: 'pointer'
+  },
+  secureToggleKnob: {
+    width: '20px', height: '20px', borderRadius: '50%', background: '#fff',
+    position: 'absolute', top: '2px', left: '2px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+  },
+
+  grid: {
+    display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '24px',
+    paddingBottom: '32px', borderBottom: '1px solid #F0EFEF'
+  },
+  field: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  label: { fontSize: '13px', fontWeight: '700', color: '#777' },
+  inputVal: { fontSize: '15px', color: '#222', padding: '16px', background: '#F8F9FA', borderRadius: '12px' },
+  inputMuted: { fontSize: '15px', color: '#AAA', padding: '16px', background: '#F8F9FA', borderRadius: '12px' },
+
+  deviceWrap: { paddingBottom: '32px', borderBottom: '1px solid #F0EFEF' },
+  deviceHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' },
+  deviceTitle: { fontSize: '18px', fontWeight: '700', color: C.text, margin: 0 },
+  textBtn: { border: 'none', background: 'none', color: C.primary, fontWeight: '600', fontSize: '14px', cursor: 'pointer' },
+  deviceDesc: { fontSize: '14px', color: C.textSub, margin: 0 },
+
+  footer: { display: 'flex', gap: '8px', fontSize: '13px', marginTop: '16px' },
+  textBtnGray: { border: 'none', background: 'none', color: '#777', fontWeight: '600', textDecoration: 'underline', cursor: 'pointer', padding: 0 },
 };

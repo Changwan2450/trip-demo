@@ -141,7 +141,12 @@ export default function Header() {
           ) : (
             <div style={s.profileWrap}>
               <button style={s.profilePillBtn} onClick={() => setMenuOpen(v => !v)}>
-                <div style={s.profilePillIcon}>😎</div>
+                <div style={s.profilePillIcon}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 2L11 13" />
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                  </svg>
+                </div>
                 <div style={s.profilePillText}>
                   <div style={s.profilePillName}>{user.name}</div>
                   <div style={s.profilePillGrade}>
@@ -382,12 +387,11 @@ const s = {
     width: '32px',
     height: '32px',
     borderRadius: '50%',
-    background: '#FFF1F1',
-    color: '#E8484A',
+    background: 'linear-gradient(135deg, #F05A5C 0%, #E8484A 100%)',
+    color: '#FFFFFF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '18px',
   },
   profilePillText: {
     display: 'flex',
