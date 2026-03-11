@@ -28,6 +28,42 @@ function getTodayText() {
   return `${y}-${m}-${d}`;
 }
 
+function getLodgingHighlights(lodging) {
+  if (!lodging) return [];
+  return [
+    '즉시 예약 확정',
+    '무료 취소 가능',
+    `${lodging.region} 인기 숙소`,
+  ];
+}
+
+function getAmenityItems(lodging) {
+  const common = ['무료 Wi-Fi', '주차 가능', '셀프 체크인'];
+  if (String(lodging?.region || '').includes('제주')) return [...common, '바비큐 공간', '오션/산 전망'];
+  if (String(lodging?.region || '').includes('서울')) return [...common, '짐 보관', '대중교통 접근'];
+  if (String(lodging?.region || '').includes('강원')) return [...common, '테라스', '조식 제공'];
+  return [...common, '가족실', '냉난방 완비'];
+}
+
+function getPolicyRows(lodging) {
+  return [
+    { label: '체크인', value: '15:00 이후' },
+    { label: '체크아웃', value: '11:00 이전' },
+    { label: '취소 정책', value: '체크인 3일 전까지 무료 취소' },
+    { label: '호스트 응답', value: '평균 10분 이내' },
+    { label: '예약 확정', value: '결제 후 즉시 확정' },
+    { label: '기준 인원', value: '2명 · 최대 4명' },
+  ];
+}
+
+function getLocationNotes(lodging) {
+  return [
+    `${lodging?.region || '주요 지역'} 중심 이동이 편리한 위치`,
+    '편의점/카페 도보권',
+    '주요 관광지 차량 10~20분 내 이동 가능',
+  ];
+}
+
 export default function LodgingDetailPage() {
   const { lodgingId } = useParams();
   const navigate = useNavigate();
@@ -50,6 +86,10 @@ export default function LodgingDetailPage() {
 
   const nights = calcNights(checkIn, checkOut);
   const today = getTodayText();
+  const highlights = getLodgingHighlights(lodging);
+  const amenityItems = getAmenityItems(lodging);
+  const policyRows = getPolicyRows(lodging);
+  const locationNotes = getLocationNotes(lodging);
 
   useEffect(() => {
     getLodging(lodgingId).then(res => setLodging(res.data)).catch(() => { });
@@ -231,12 +271,35 @@ export default function LodgingDetailPage() {
           <div style={s.main}>
             <p style={s.region}>{lodging.region}</p>
             <h1 style={s.name}>{lodging.name}</h1>
+            <div style={s.highlightRow}>
+              {highlights.map((item) => (
+                <span key={item} style={s.highlightChip}>{item}</span>
+              ))}
+            </div>
             <div style={s.meta}>
               <span>★ {lodging.rating}</span>
               <span style={s.dot}>·</span>
               <span>{lodging.reviewCount}개 후기</span>
               <span style={s.dot}>·</span>
               <span>{lodging.address}</span>
+            </div>
+            <div style={s.quickInfoGrid}>
+              <div style={s.quickInfoItem}>
+                <span style={s.quickInfoLabel}>체크인/체크아웃</span>
+                <strong style={s.quickInfoValue}>15:00 · 11:00</strong>
+              </div>
+              <div style={s.quickInfoItem}>
+                <span style={s.quickInfoLabel}>기준/최대 인원</span>
+                <strong style={s.quickInfoValue}>2명 / 4명</strong>
+              </div>
+              <div style={s.quickInfoItem}>
+                <span style={s.quickInfoLabel}>숙소 유형</span>
+                <strong style={s.quickInfoValue}>프라이빗 스테이</strong>
+              </div>
+              <div style={s.quickInfoItem}>
+                <span style={s.quickInfoLabel}>최근 예약</span>
+                <strong style={s.quickInfoValue}>이번 주 9건</strong>
+              </div>
             </div>
             <div style={s.actionRow}>
               <button type="button" className="tz-action-btn" style={{ ...s.actionBtn, ...(liked ? s.actionBtnActive : null) }} onClick={() => toggleWishlist(lodging)}>
@@ -257,31 +320,58 @@ export default function LodgingDetailPage() {
             <hr style={s.hr} />
 
             <div style={s.section}>
+              <h2 style={s.sectionTitle}>편의시설</h2>
+              <div style={s.amenityList}>
+                {amenityItems.map((item) => (
+                  <div key={item} style={s.amenityItem}>{item}</div>
+                ))}
+              </div>
+            </div>
+
+            <hr style={s.hr} />
+
+            <div style={s.section}>
+              <h2 style={s.sectionTitle}>이용 안내</h2>
+              <div style={s.policyList}>
+                {policyRows.map((row) => (
+                  <div key={row.label} style={s.policyRow}>
+                    <span style={s.policyLabel}>{row.label}</span>
+                    <span style={s.policyValue}>{row.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <hr style={s.hr} />
+
+            <div style={s.section}>
               {/* TODO(back-end): 리뷰 요약/리뷰 목록/작성 가능 여부는 아래 mock 대신 리뷰 API 응답으로 교체한다. */}
               <div style={s.reviewSectionHeader}>
                 <div>
                   <h2 style={s.sectionTitle}>리뷰</h2>
                   <p style={s.reviewSectionDesc}>실제 투숙 경험을 기준으로 한 리뷰와 사진을 모아봤습니다.</p>
                 </div>
-                <div style={s.reviewScoreBadge}>
+                <div style={s.reviewScoreInline}>
                   <span style={s.reviewScoreValue}>★ {reviewSummary.averageRating.toFixed(1)}</span>
                   <span style={s.reviewScoreMeta}>리뷰 {reviewSummary.reviewCount}개</span>
                 </div>
               </div>
 
-              <div style={s.reviewSummaryGrid}>
-                <article style={s.reviewSummaryCard}>
-                  <p style={s.reviewSummaryLabel}>평균 별점</p>
-                  <p style={s.reviewSummaryValue}>{reviewSummary.averageRating.toFixed(1)}</p>
-                </article>
-                <article style={s.reviewSummaryCard}>
-                  <p style={s.reviewSummaryLabel}>전체 리뷰</p>
-                  <p style={s.reviewSummaryValue}>{reviewSummary.reviewCount}개</p>
-                </article>
-                <article style={s.reviewSummaryCard}>
-                  <p style={s.reviewSummaryLabel}>사진 리뷰</p>
-                  <p style={s.reviewSummaryValue}>{reviewSummary.photoReviewCount}개</p>
-                </article>
+              <div style={s.reviewSummaryInline}>
+                <div style={s.reviewSummaryStat}>
+                  <span style={s.reviewSummaryLabel}>평균 별점</span>
+                  <span style={s.reviewSummaryText}>{reviewSummary.averageRating.toFixed(1)}</span>
+                </div>
+                <div style={s.reviewSummaryDivider} />
+                <div style={s.reviewSummaryStat}>
+                  <span style={s.reviewSummaryLabel}>전체 리뷰</span>
+                  <span style={s.reviewSummaryText}>{reviewSummary.reviewCount}개</span>
+                </div>
+                <div style={s.reviewSummaryDivider} />
+                <div style={s.reviewSummaryStat}>
+                  <span style={s.reviewSummaryLabel}>사진 리뷰</span>
+                  <span style={s.reviewSummaryText}>{reviewSummary.photoReviewCount}개</span>
+                </div>
               </div>
 
               <ReviewComposer
@@ -344,6 +434,11 @@ export default function LodgingDetailPage() {
                 />
               </div>
               <p style={s.mapCoord}>위도 {lodging.latitude} / 경도 {lodging.longitude}</p>
+              <div style={s.locationNoteList}>
+                {locationNotes.map((note) => (
+                  <div key={note} style={s.locationNoteItem}>{note}</div>
+                ))}
+              </div>
             </div>
 
             <hr style={s.hr} />
@@ -403,6 +498,28 @@ export default function LodgingDetailPage() {
               hideSelectionSummary
             />
             {bookingError && <p style={s.bookingError}>{bookingError}</p>}
+            <div style={s.sideInfoCard}>
+              <div style={s.sideInfoHeader}>
+                <p style={s.sideInfoTitle}>예약 전 확인해 주세요</p>
+                <span style={s.sideInfoBadge}>필수</span>
+              </div>
+              <ul style={s.sideInfoList}>
+                <li>체크인 3일 전까지 무료 취소가 가능합니다.</li>
+                <li>결제 완료 후 즉시 예약이 확정됩니다.</li>
+                <li>현장 결제 없이 예약 단계에서 총액이 확정됩니다.</li>
+              </ul>
+            </div>
+            <div style={s.sideInfoCard}>
+              <div style={s.sideInfoHeader}>
+                <p style={s.sideInfoTitle}>이 숙소의 혜택</p>
+                <span style={{ ...s.sideInfoBadge, background: '#EEF6FF', color: '#2563EB', borderColor: '#BFDBFE' }}>혜택</span>
+              </div>
+              <ul style={s.sideInfoList}>
+                <li>리뷰 작성 시 포인트 적립 예정</li>
+                <li>등급별 추가 적립률 적용 가능</li>
+                <li>쿠폰/포인트는 예약 페이지에서 함께 적용할 수 있습니다.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -428,7 +545,21 @@ const s = {
   main: { flex: 1, minWidth: 0 },
   region: { fontSize: '13px', fontWeight: '600', color: C.textSub, margin: '0 0 8px' },
   name: { fontSize: '28px', fontWeight: '700', color: C.text, margin: '0 0 12px', lineHeight: 1.25 },
+  highlightRow: { display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' },
+  highlightChip: {
+    fontSize: '11px',
+    fontWeight: 800,
+    color: '#B45309',
+    background: '#FFF7ED',
+    border: '1px solid #FED7AA',
+    borderRadius: '999px',
+    padding: '6px 10px',
+  },
   meta: { display: 'flex', gap: '6px', alignItems: 'center', fontSize: '14px', color: C.text, flexWrap: 'wrap' },
+  quickInfoGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', marginTop: '18px' },
+  quickInfoItem: { borderTop: `2px solid ${C.borderLight}`, paddingTop: '12px' },
+  quickInfoLabel: { display: 'block', fontSize: '12px', color: C.textSub, fontWeight: 700, marginBottom: '6px' },
+  quickInfoValue: { fontSize: '15px', color: C.text, fontWeight: 800 },
   actionRow: { display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' },
   actionBtn: {
     border: `1px solid ${C.border}`,
@@ -450,34 +581,48 @@ const s = {
   section: { marginBottom: '8px' },
   sectionTitle: { fontSize: '20px', fontWeight: '700', color: C.text, margin: '0 0 16px' },
   desc: { fontSize: '15px', lineHeight: '1.75', color: C.text, margin: 0 },
+  amenityList: { display: 'flex', gap: '10px', flexWrap: 'wrap' },
+  amenityItem: {
+    borderRadius: '12px',
+    background: '#F8F8F8',
+    border: `1px solid ${C.borderLight}`,
+    padding: '12px 14px',
+    fontSize: '13px',
+    color: C.text,
+    fontWeight: 700,
+  },
+  policyList: { display: 'grid', gap: '10px' },
+  policyRow: { display: 'flex', justifyContent: 'space-between', gap: '16px', paddingBottom: '10px', borderBottom: `1px solid ${C.borderLight}` },
+  policyLabel: { fontSize: '13px', color: C.textSub, fontWeight: 700 },
+  policyValue: { fontSize: '14px', color: C.text, fontWeight: 700, textAlign: 'right' },
   reviewSectionHeader: { display: 'flex', justifyContent: 'space-between', gap: '18px', alignItems: 'flex-start', flexWrap: 'wrap', marginBottom: '16px' },
   reviewSectionDesc: { margin: 0, fontSize: '14px', color: C.textSub, lineHeight: 1.6 },
-  reviewScoreBadge: {
-    minWidth: '140px',
-    borderRadius: '18px',
-    background: 'linear-gradient(145deg, #FFF7ED 0%, #FFF1F2 100%)',
-    border: '1px solid #FBD7D9',
-    padding: '16px 18px',
+  reviewScoreInline: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
+    alignItems: 'baseline',
+    gap: '10px',
+    paddingTop: '4px',
   },
   reviewScoreValue: { fontSize: '24px', fontWeight: 800, color: '#B45309' },
   reviewScoreMeta: { fontSize: '13px', fontWeight: 700, color: C.textSub },
-  reviewSummaryGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px', marginBottom: '18px' },
-  reviewSummaryCard: {
-    borderRadius: '18px',
-    border: `1px solid ${C.borderLight}`,
-    background: '#fff',
-    padding: '16px 18px',
+  reviewSummaryInline: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '12px',
+    alignItems: 'center',
+    padding: '0 0 16px',
+    marginBottom: '10px',
+    borderBottom: `1px solid ${C.borderLight}`,
   },
-  reviewSummaryLabel: { margin: '0 0 8px', fontSize: '12px', color: C.textSub, fontWeight: 700 },
-  reviewSummaryValue: { margin: 0, fontSize: '24px', color: C.text, fontWeight: 800 },
-  reviewSortRow: { display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '18px 0 14px' },
+  reviewSummaryStat: { display: 'inline-flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' },
+  reviewSummaryLabel: { fontSize: '12px', color: C.textSub, fontWeight: 700 },
+  reviewSummaryText: { fontSize: '18px', color: C.text, fontWeight: 800 },
+  reviewSummaryDivider: { width: '1px', height: '14px', background: C.borderLight },
+  reviewSortRow: { display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '12px 0 8px' },
   reviewSortBtn: {
-    border: `1px solid ${C.border}`,
+    border: 'none',
     borderRadius: '999px',
-    background: '#fff',
+    background: '#F5F5F5',
     color: C.textSub,
     fontSize: '13px',
     fontWeight: 700,
@@ -485,13 +630,12 @@ const s = {
     cursor: 'pointer',
   },
   reviewSortBtnActive: {
-    background: '#1F2530',
+    background: '#21242B',
     color: '#fff',
-    borderColor: '#1F2530',
   },
   reviewSuccess: { margin: '12px 0 0', fontSize: '13px', color: '#15803D', fontWeight: 700 },
   reviewError: { margin: '12px 0 0', fontSize: '13px', color: '#B91C1C', fontWeight: 700 },
-  reviewList: { display: 'grid', gap: '12px' },
+  reviewList: { display: 'grid', gap: 0, justifyItems: 'start' },
   reviewEmpty: {
     border: `1px dashed ${C.border}`,
     borderRadius: '18px',
@@ -503,6 +647,8 @@ const s = {
   reviewEmptyDesc: { margin: 0, fontSize: '14px', color: C.textSub, lineHeight: 1.6 },
   mapBox: { borderRadius: '24px', overflow: 'hidden', border: `1px solid ${C.borderLight}`, boxShadow: '0 8px 24px rgba(0,0,0,0.06)' },
   mapCoord: { fontSize: '12px', color: C.textSub, margin: '12px 0 0' },
+  locationNoteList: { display: 'grid', gap: '8px', marginTop: '14px' },
+  locationNoteItem: { fontSize: '13px', color: C.text, background: '#FAFAFA', borderRadius: '12px', padding: '10px 12px', border: `1px solid ${C.borderLight}` },
   inquiryBtn: {
     padding: '14px 28px',
     background: 'transparent',
@@ -529,4 +675,16 @@ const s = {
   guestField: { padding: '12px 16px' },
   guestSelect: { border: 'none', outline: 'none', fontSize: '14px', color: C.text, background: 'transparent', width: '100%', padding: 0, cursor: 'pointer' },
   bookingError: { margin: '10px 2px 0', color: '#DC2626', fontSize: '13px', fontWeight: 600 },
+  sideInfoCard: {
+    marginTop: '14px',
+    border: `1px solid ${C.borderLight}`,
+    borderRadius: '18px',
+    background: '#fff',
+    padding: '16px 18px',
+    boxShadow: '0 8px 22px rgba(15,23,42,0.04)',
+  },
+  sideInfoHeader: { display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', marginBottom: '10px' },
+  sideInfoTitle: { margin: 0, fontSize: '15px', color: C.text, fontWeight: 800 },
+  sideInfoBadge: { fontSize: '11px', fontWeight: 800, color: '#B45309', background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: '999px', padding: '5px 8px', whiteSpace: 'nowrap' },
+  sideInfoList: { margin: 0, paddingLeft: '18px', display: 'grid', gap: '8px', color: C.textSub, fontSize: '13px', lineHeight: 1.6 },
 };

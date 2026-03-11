@@ -1,10 +1,11 @@
 import { Link, useParams } from 'react-router-dom';
-import { PROMOTION_ITEMS, findPromotionBySlug } from '../../mock/promotionData';
+import { getPromotionTarget, PROMOTION_ITEMS, findPromotionBySlug } from '../../mock/promotionData';
 import { C, MAX_WIDTH } from '../../styles/tokens';
 
 export default function PromotionDetailPage() {
   const { promotionSlug } = useParams();
   const promotion = findPromotionBySlug(promotionSlug);
+  const promotionTarget = getPromotionTarget(promotion);
   // TODO(back-end): 프로모션 상세 API가 준비되면 slug 기반 상세 조회 응답으로 교체한다.
 
   if (!promotion) {
@@ -47,7 +48,7 @@ export default function PromotionDetailPage() {
             <p style={s.infoDesc}>{promotion.description}</p>
             <div style={s.actions}>
               <Link to="/promotions" style={s.secondaryBtn}>프로모션 목록</Link>
-              <Link to="/lodgings" style={s.primaryBtn}>적용 숙소 보기</Link>
+              <Link to={promotionTarget} style={s.primaryBtn}>{promotion.applyLabel || '적용 숙소 보기'}</Link>
             </div>
           </div>
 

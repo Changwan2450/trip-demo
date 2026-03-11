@@ -2,6 +2,8 @@
 export const PROMOTION_ITEMS = [
   {
     slug: 'spring-domestic-coupon-pack',
+    applyPath: '/lodgings?benefit=coupon&scope=domestic',
+    applyLabel: '국내 숙소 바로 보기',
     lead: '봄 맞이 국내여행 할인 만개!',
     title: '최대 10% 할인\n국내숙소 쿠폰팩',
     date: '2026.03.01 - 2026.03.31 23:59',
@@ -18,6 +20,8 @@ export const PROMOTION_ITEMS = [
   },
   {
     slug: 'golden-week-overseas-coupon-pack',
+    applyPath: '/overseas?benefit=coupon&scope=overseas',
+    applyLabel: '해외 숙소 바로 보기',
     lead: '5월 황금연휴는 한 번 더 할인!',
     title: '최대 12%\n해외숙소 쿠폰팩',
     date: '2026.03.01 - 2026.03.31 23:59',
@@ -34,6 +38,8 @@ export const PROMOTION_ITEMS = [
   },
   {
     slug: 'domestic-open-run-special',
+    applyPath: '/lodgings?promotion=openrun&scope=domestic',
+    applyLabel: '오픈런 숙소 바로 보기',
     lead: '매주 월·목 오전 10시 오픈!',
     title: '놀라운 특가 등장!\n국내여행 오픈런',
     date: '2026.12.01 - 상시 진행',
@@ -50,6 +56,8 @@ export const PROMOTION_ITEMS = [
   },
   {
     slug: 'overseas-open-run-special',
+    applyPath: '/overseas?promotion=openrun&scope=overseas',
+    applyLabel: '해외 특가 바로 보기',
     lead: '매주 화·수·금 오전 10시 오픈!',
     title: '놀라운 특가 등장\n해외여행 오픈런',
     date: '2026.12.01 - 상시 진행',
@@ -68,4 +76,8 @@ export const PROMOTION_ITEMS = [
 
 export function findPromotionBySlug(slug) {
   return PROMOTION_ITEMS.find((item) => item.slug === slug);
+}
+
+export function getPromotionTarget(promotion) {
+  return promotion?.applyPath || '/lodgings';
 }
