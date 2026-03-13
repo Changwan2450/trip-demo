@@ -70,7 +70,9 @@ npm run dev
 정적 참고 페이지도 같은 dev 서버에서 함께 열립니다.
 
 - 메인 앱: `http://localhost:5173`
-- 웹 프레젠테이션: `http://localhost:5173/presentation/index.html`
+- 웹 프레젠테이션(기존): `http://localhost:5173/presentation/index.html`
+- 웹 프레젠테이션(최종): `http://localhost:5173/presentation/TripZone_presentation_FINAL.html`
+- DB ERD (Clean): `http://localhost:5173/presentation/TripZone_ERD_Clean.html`
 - DB 스키마 대시보드: `http://localhost:5173/schema/index.html`
 
 ## Build Check
@@ -94,7 +96,9 @@ npm run build
 
 ## Presentation & References
 
-- 웹 프레젠테이션: `http://localhost:5173/presentation/index.html`
+- 웹 프레젠테이션(기존): `http://localhost:5173/presentation/index.html`
+- 웹 프레젠테이션(최종): `http://localhost:5173/presentation/TripZone_presentation_FINAL.html`
+- DB ERD (Clean): `http://localhost:5173/presentation/TripZone_ERD_Clean.html`
 - DB 스키마 대시보드: `http://localhost:5173/schema/index.html`
 
 ## Recent Frontend Updates
@@ -111,4 +115,6 @@ npm run build
   - `doc/db-schema-reference.md`
   - `doc/lodging-review-plan.md`
   - `frontend/public/presentation/index.html`
+  - `frontend/public/presentation/TripZone_presentation_FINAL.html`
+  - `frontend/public/presentation/TripZone_ERD_Clean.html`
   - `frontend/public/schema/index.html`
