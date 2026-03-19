@@ -42,6 +42,13 @@ const serviceHighlights = [
   },
 ];
 
+const quickExploreLinks = [
+  { label: '이번 주말 제주', to: '/lodgings?region=제주' },
+  { label: '부산 바다 숙소', to: '/lodgings?region=부산' },
+  { label: '서울 시티 스테이', to: '/lodgings?region=서울' },
+  { label: '전체 숙소 보기', to: '/lodgings' },
+];
+
 const regionNamePools = {
   제주: [
     '한라산 뷰 펜션',
@@ -89,6 +96,12 @@ function buildImageVariant(url, seedSuffix) {
 
   const hasQuery = url.includes('?');
   return `${url}${hasQuery ? '&' : '?'}v=${encodeURIComponent(safeSeed)}`;
+}
+
+function handleCardKeyDown(event, onActivate) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  onActivate();
 }
 
 function PromoEventCard({ banner }) {
@@ -276,6 +289,11 @@ export default function HomePage() {
         .tz-promo-image { transition: transform 0.3s ease; }
         .tz-theme-orb-wrap:hover .tz-theme-orb { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); border-color: ${C.primary}; }
         .tz-theme-orb { transition: all 0.2s ease; }
+        .tz-focus-card:focus-visible {
+          outline: 3px solid ${C.primary};
+          outline-offset: 4px;
+          border-radius: 24px;
+        }
         @keyframes tz-marquee {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
@@ -300,6 +318,13 @@ export default function HomePage() {
           <div style={s.heroRight}>
             <div style={s.searchShell}>
               <SearchBar showTabs />
+            </div>
+            <div style={s.quickExploreRow}>
+              {quickExploreLinks.map((item) => (
+                <button key={item.label} type="button" style={s.quickExploreChip} onClick={() => navigate(item.to)}>
+                  {item.label}
+                </button>
+              ))}
             </div>
             <div style={s.themeWrap}>
               <div style={s.themeTrack} className="tz-theme-track">
@@ -333,7 +358,15 @@ export default function HomePage() {
           </div>
           <div style={s.eventGrid}>
             {eventCards.map((item) => (
-              <article key={item.slug} style={s.eventCard} className="tz-lift-soft" onClick={() => navigate(`/events/${item.slug}`)}>
+              <article
+                key={item.slug}
+                style={s.eventCard}
+                className="tz-lift-soft tz-focus-card"
+                onClick={() => navigate(`/events/${item.slug}`)}
+                onKeyDown={(event) => handleCardKeyDown(event, () => navigate(`/events/${item.slug}`))}
+                role="link"
+                tabIndex={0}
+              >
                 <div style={{ ...s.eventVisual, background: item.gradient }}>
                   <div>
                     <p style={s.eventLead}>{item.lead}</p>
@@ -377,7 +410,15 @@ export default function HomePage() {
           </div>
           <div style={s.newGrid}>
             {newOpenings.map((lodging) => (
-              <article key={lodging.cardKey} style={s.newCard} className="tz-lift-soft" onClick={() => navigate(`/lodgings/${lodging.lodgingId}`)}>
+              <article
+                key={lodging.cardKey}
+                style={s.newCard}
+                className="tz-lift-soft tz-focus-card"
+                onClick={() => navigate(`/lodgings/${lodging.lodgingId}`)}
+                onKeyDown={(event) => handleCardKeyDown(event, () => navigate(`/lodgings/${lodging.lodgingId}`))}
+                role="link"
+                tabIndex={0}
+              >
                 <img src={lodging.thumbnailUrl} alt={lodging.name} style={s.newCardImg} />
                 <div style={s.newCardBody}>
                   <p style={s.newCardRegion}>{lodging.region}</p>
@@ -502,8 +543,24 @@ const s = {
     padding: '20px',
     boxShadow: '0 24px 64px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.04)',
   },
-  themeWrap: {
+  quickExploreRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '10px',
     marginTop: '16px',
+  },
+  quickExploreChip: {
+    border: '1px solid #F1D6D6',
+    borderRadius: '999px',
+    background: '#FFF8F8',
+    color: '#B9383A',
+    fontSize: '12px',
+    fontWeight: 800,
+    padding: '9px 12px',
+    cursor: 'pointer',
+  },
+  themeWrap: {
+    marginTop: '22px',
     overflow: 'hidden',
     paddingBottom: '4px',
   },
