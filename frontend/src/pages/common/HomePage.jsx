@@ -42,13 +42,6 @@ const serviceHighlights = [
   },
 ];
 
-const quickExploreLinks = [
-  { label: '이번 주말 제주', to: '/lodgings?region=제주' },
-  { label: '부산 바다 숙소', to: '/lodgings?region=부산' },
-  { label: '서울 시티 스테이', to: '/lodgings?region=서울' },
-  { label: '전체 숙소 보기', to: '/lodgings' },
-];
-
 const regionNamePools = {
   제주: [
     '한라산 뷰 펜션',
@@ -319,13 +312,6 @@ export default function HomePage() {
             <div style={s.searchShell}>
               <SearchBar showTabs />
             </div>
-            <div style={s.quickExploreRow}>
-              {quickExploreLinks.map((item) => (
-                <button key={item.label} type="button" style={s.quickExploreChip} onClick={() => navigate(item.to)}>
-                  {item.label}
-                </button>
-              ))}
-            </div>
             <div style={s.themeWrap}>
               <div style={s.themeTrack} className="tz-theme-track">
                 {themeLoop.map((theme, idx) => (
@@ -543,24 +529,8 @@ const s = {
     padding: '20px',
     boxShadow: '0 24px 64px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.04)',
   },
-  quickExploreRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '10px',
-    marginTop: '16px',
-  },
-  quickExploreChip: {
-    border: '1px solid #F1D6D6',
-    borderRadius: '999px',
-    background: '#FFF8F8',
-    color: '#B9383A',
-    fontSize: '12px',
-    fontWeight: 800,
-    padding: '9px 12px',
-    cursor: 'pointer',
-  },
   themeWrap: {
-    marginTop: '22px',
+    marginTop: '16px',
     overflow: 'hidden',
     paddingBottom: '4px',
   },
